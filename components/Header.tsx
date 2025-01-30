@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { ChartNoAxesGantt, Menu } from "lucide-react";
 import Link from "next/link";
 import { useUser, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"; // Added imports
 
@@ -20,9 +20,11 @@ const Navbar = () => {
         <Link href="/about" className="text-gray-100 hover:text-blue-600">
           About Us
         </Link>
+        <SignedOut>
         <Link href="/Pricing" className="text-gray-100 hover:text-blue-600">
           Pricing
         </Link>
+        </SignedOut>
         <Link href="/contact" className="text-gray-100 hover:text-blue-600">
           Contact
         </Link>
@@ -30,10 +32,17 @@ const Navbar = () => {
 
       <div className="hidden md:flex gap-4">
         <SignedIn>
-          <UserButton afterSignOutUrl="/" />
-          <Button asChild>
-            <Link href="/dashboard">onboarding</Link>
+          <Button className="bg-red-200 hover:bg-red-600">
+            <Link href="/dashboard">Create Project</Link>
           </Button>
+          <UserButton > 
+            <UserButton.MenuItems>
+              <UserButton.Link 
+              label="My Organization"
+              labelIcon = {<ChartNoAxesGantt size={24} />}
+              href="/onboarding" />
+            </UserButton.MenuItems>
+          </UserButton>
         </SignedIn>
         <SignedOut>
           <Button asChild>
@@ -52,6 +61,16 @@ const Navbar = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-6 space-y-6">
+          <SignedIn>
+          <UserButton > 
+            <UserButton.MenuItems>
+              <UserButton.Link 
+              label="My Organization"
+              labelIcon = {<ChartNoAxesGantt size={24} />}
+              href="/onboarding" />
+            </UserButton.MenuItems>
+          </UserButton>
+          </SignedIn>
           <Link
             href="/about"
             className="text-lg font-medium text-gray-100 block"
@@ -72,8 +91,8 @@ const Navbar = () => {
           </Link>
 
           <SignedIn>
-            <Button asChild className="w-full gap-4">
-              <Link href="/dashboard">onboarding</Link>
+            <Button asChild className="w-full gap-4 hover:bg-red-600 ">
+              <Link href="/dashboard">Create Project</Link>
             </Button>
           </SignedIn>
           <SignedOut>
