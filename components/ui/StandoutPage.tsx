@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight , CheckCheck  ,Building2   } from "lucide-react";
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 
@@ -199,12 +199,12 @@ function HeroGeometric({
               </Link>
               <SignedOut>
                 <Link href="/about">
-                  <Button variant="default">Learn More</Button>
+                  <Button variant="default">Learn More <CheckCheck  /> </Button>
                 </Link>
               </SignedOut>
               <SignedIn>
                 <Link href="/onboarding">
-                  <Button variant="default">Onboarding </Button>
+                  <Button variant="default">Onboarding  <Building2  /></Button>
                 </Link>
               </SignedIn>
             </div>
