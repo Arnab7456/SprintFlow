@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "./Provider";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Header";
+import {DemoHeroGeometric} from "@/components/StandPage";
 import { ClerkProvider } from "@clerk/nextjs";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,8 @@ export default function RootLayout({
          enableSystem
          disableTransitionOnChange>
           <Navbar />
-          <main className="min-h-screen">  {children}</main>
+          <main className="min-h-screen"> 
+            {children}</main>
           <div className="container mx-auto">
           <Footer />
           </div>
