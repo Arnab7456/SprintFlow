@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import { motion } from "framer-motion";
-import { Circle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "./button";
-import { ArrowRight , CheckCheck  ,Building2   } from "lucide-react";
-import Link from "next/link";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { motion } from "framer-motion"
+import { Circle } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "./button"
+import { ArrowRight, CheckCheck, Building2 } from "lucide-react"
+import Link from "next/link"
+import { SignedIn, SignedOut } from "@clerk/nextjs"
 
 function ElegantShape({
   className,
@@ -16,12 +16,12 @@ function ElegantShape({
   rotate = 0,
   gradient = "from-white/[0.08]",
 }: {
-  className?: string;
-  delay?: number;
-  width?: number;
-  height?: number;
-  rotate?: number;
-  gradient?: string;
+  className?: string
+  delay?: number
+  width?: number
+  height?: number
+  rotate?: number
+  gradient?: string
 }) {
   return (
     <motion.div
@@ -66,12 +66,12 @@ function ElegantShape({
             "backdrop-blur-[2px] border-2 border-white/[0.15]",
             "shadow-[0_8px_32px_0_rgba(255,255,255,0.1)]",
             "after:absolute after:inset-0 after:rounded-full",
-            "after:bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_70%)]"
+            "after:bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_70%)]",
           )}
         />
       </motion.div>
     </motion.div>
-  );
+  )
 }
 
 function HeroGeometric({
@@ -79,9 +79,9 @@ function HeroGeometric({
   title1 = "Elevate Your Digital Vision",
   title2 = "Crafting Exceptional Websites",
 }: {
-  badge?: string;
-  title1?: string;
-  title2?: string;
+  badge?: string
+  title1?: string
+  title2?: string
 }) {
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -94,11 +94,11 @@ function HeroGeometric({
         ease: [0.25, 0.4, 0.25, 1],
       },
     }),
-  };
+  }
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#030303]">
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.05] via-transparent to-rose-500/[0.05] blur-3xl" />
+    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 to-pink-50 dark:bg-[#030303]">
+   <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-transparent to-pink-100/30 dark:bg-[#030303]" />
 
       <div className="absolute inset-0 overflow-hidden">
         <ElegantShape
@@ -154,26 +154,21 @@ function HeroGeometric({
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8 md:mb-12"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.08] mb-8 md:mb-12"
           >
             <Circle className="h-2 w-2 fill-rose-500/80" />
-            <span className="text-sm text-white/60 tracking-wide">{badge}</span>
+            <span className="text-sm text-gray-600 dark:text-white/60 tracking-wide">{badge}</span>
           </motion.div>
 
-          <motion.div
-            custom={1}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-          >
+          <motion.div custom={1} variants={fadeUpVariants} initial="hidden" animate="visible">
             <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-6 md:mb-8 tracking-tight">
-              <span className="bg-clip-text text-transparent bg-gradient-to-b from-white to-white/80">
+              <span className="bg-clip-text text-transparent bg-gradient-to-b from-gray-800 to-gray-600 dark:from-white dark:to-white/80">
                 {title1}
               </span>
               <br />
               <span
                 className={cn(
-                  "bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-white/90 to-rose-300 "
+                  "bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-indigo-300 dark:via-white/90 dark:to-rose-300",
                 )}
               >
                 {title2}
@@ -181,30 +176,37 @@ function HeroGeometric({
             </h1>
           </motion.div>
 
-          <motion.div
-            custom={2}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <p className="text-base sm:text-lg md:text-xl text-white/40 mb-8 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
-              Optimize your agile process with seamless collaboration, sprint
-              planning, and real-time progress tracking.
+          <motion.div custom={2} variants={fadeUpVariants} initial="hidden" animate="visible">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-white/40 mb-8 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
+              Optimize your agile process with seamless collaboration, sprint planning, and real-time progress tracking.
             </p>
             <div className="flex justify-center items-center gap-4">
               <Link href="/onboarding">
-                <Button variant="default">
-                  Get Started <ArrowRight />{" "}
+                <Button
+                  variant="default"
+                  className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-white dark:text-gray-800 dark:hover:bg-gray-200"
+                >
+                  Get Started <ArrowRight />
                 </Button>
               </Link>
               <SignedOut>
                 <Link href="/about">
-                  <Button variant="default">Learn More <CheckCheck  /> </Button>
+                  <Button
+                    variant="outline"
+                    className="border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-white dark:text-white dark:hover:bg-white/10"
+                  >
+                    Learn More <CheckCheck />
+                  </Button>
                 </Link>
               </SignedOut>
               <SignedIn>
                 <Link href="/onboarding">
-                  <Button variant="default">Onboarding  <Building2  /></Button>
+                  <Button
+                    variant="outline"
+                    className="border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-white dark:text-white dark:hover:bg-white/10"
+                  >
+                    Onboarding <Building2 />
+                  </Button>
                 </Link>
               </SignedIn>
             </div>
@@ -212,9 +214,10 @@ function HeroGeometric({
         </div>
       </div>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-[#030303]/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white/80 dark:from-[#030303] dark:via-transparent dark:to-[#030303]/80 pointer-events-none" />
     </div>
-  );
+  )
 }
 
-export { HeroGeometric };
+export { HeroGeometric }
+

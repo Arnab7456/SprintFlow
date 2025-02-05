@@ -35,7 +35,7 @@ export default function RootLayout({
          attribute="class"
          defaultTheme="dark"
          enableSystem
-         disableTransitionOnChange>
+         >
           <Navbar />
           <main className="min-h-screen"> 
             {children}</main>

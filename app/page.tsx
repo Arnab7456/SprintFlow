@@ -6,7 +6,7 @@ export default function Home() {
   return (
    <div>
     <DemoHeroGeometric />
-    <section className="container mx-auto py-5   font-serif text-4xl  text-center  bg-[#030303]">
+    <section className="container mx-auto py-5   font-serif text-4xl  text-center">
       <h1>Our Partners</h1>
     <Company  />
     </section>
