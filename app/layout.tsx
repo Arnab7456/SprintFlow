@@ -5,6 +5,8 @@ import { ThemeProvider } from "./Provider";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Header";
 import { ClerkProvider } from "@clerk/nextjs";
+import NavbarClient from "@/components/Header";
+import NavbarServer from "@/components/ServeNav";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -36,7 +38,7 @@ export default function RootLayout({
          defaultTheme="dark"
          enableSystem
          >
-          <Navbar />
+          <NavbarServer />
           <main className="min-h-screen"> 
             {children}</main>
           <div className="container mx-auto">
