@@ -1,4 +1,5 @@
 import { getOrganization } from "@/actions/organization";
+import OrgSwitch from "@/components/org-switch";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 export interface PageProps {
@@ -17,13 +18,18 @@ export default async function Organization({ params }: PageProps) {
     return <div>Organization not found</div>;
   }
   return (
-    <div className=" container mx-auto mt-5">
-      <h1>{organization.name}</h1>
-      <div className="mb-4">
-        Show organization projects
+    <div className="container mx-auto px-4">
+      <div className="mb-4 flex flex-col sm:flex-row justify-between items-start">
+        <h1 className="text-5xl font-bold gradient-title pb-2">
+          {organization.name}&rsquo;s Projects
+        </h1>
+        <OrgSwitch />
       </div>
-      <div className="mt-4">
-        Show organization members
+      <div className="mb-4">
+       some orgs projects
+      </div>
+      <div className="mt-8">
+      projects member of this org
       </div>
     </div>
   )
