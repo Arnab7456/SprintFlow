@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import { motion } from "framer-motion";
+import UserMenu from "./user-menu";
 const NavbarClient =  () => {
   const {theme , setTheme} = useTheme()
   const buttonVariants = {
@@ -52,7 +53,7 @@ const NavbarClient =  () => {
       <div className="hidden md:flex gap-4">
         <SignedIn>
           <Button >
-            <Link href="/dashboard">Create Project</Link>
+            <Link href="/onboarding">Create Project</Link>
           </Button>
           <motion.li
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -67,7 +68,7 @@ const NavbarClient =  () => {
               <Moon className="text-gray-800 w-5 h-5" />
             )}
           </motion.li>
-          <UserButton afterSignOutUrl="/" />
+          <UserMenu />
         </SignedIn>
         <SignedOut>
           <Button asChild>
@@ -87,7 +88,7 @@ const NavbarClient =  () => {
         </SheetTrigger>
         <SheetContent side="left" className="p-6 space-y-6">
           <SignedIn>
-            <UserButton afterSignOutUrl="/" />
+            <UserMenu/>
           </SignedIn>
           <SignedOut>
             <Link href="/about" className="text-lg font-medium  block">
@@ -115,7 +116,7 @@ const NavbarClient =  () => {
             )}
           </motion.li>
             <Button asChild className="w-full gap-4">
-              <Link href="/dashboard">Create Project</Link>
+              <Link href="/onboarding">Create Project</Link>
             </Button>
           </SignedIn>
           <SignedOut>
