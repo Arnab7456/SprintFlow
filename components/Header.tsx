@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import { motion } from "framer-motion";
 import UserMenu from "./user-menu";
+
 const NavbarClient =  () => {
   const {theme , setTheme} = useTheme()
   const buttonVariants = {
@@ -143,6 +144,7 @@ const NavbarClient =  () => {
           
         </SheetContent>
       </Sheet>
+     
     </nav>
   );
 };
