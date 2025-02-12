@@ -54,7 +54,7 @@ const NavbarClient =  () => {
       <div className="hidden md:flex gap-4">
         <SignedIn>
           <Button >
-            <Link href="/onboarding">Create Project</Link>
+            <Link href="/project/create">Create Project</Link>
           </Button>
           <motion.li
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -117,7 +117,7 @@ const NavbarClient =  () => {
             )}
           </motion.li>
             <Button asChild className="w-full gap-4">
-              <Link href="/onboarding">Create Project</Link>
+              <Link href="/project/create">Create Project</Link>
             </Button>
           </SignedIn>
           <SignedOut>
