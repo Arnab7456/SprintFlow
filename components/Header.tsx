@@ -56,6 +56,9 @@ const NavbarClient =  () => {
           <Button >
             <Link href="/project/create">Create Project</Link>
           </Button>
+          <Button >
+            <Link href="/onboarding">Onboarding</Link>
+          </Button>
           <motion.li
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="inline-flex items-center justify-center h-10 w-10 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
@@ -118,6 +121,9 @@ const NavbarClient =  () => {
           </motion.li>
             <Button asChild className="w-full gap-4">
               <Link href="/project/create">Create Project</Link>
+            </Button>
+            <Button asChild className="w-full gap-4">
+              <Link href="/onboarding">Onboarding</Link>
             </Button>
           </SignedIn>
           <SignedOut>

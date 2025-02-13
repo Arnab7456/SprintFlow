@@ -27,8 +27,8 @@ export default function OrgSwitch() {
           appearance={{
             elements: {
               organizationSwitcherTrigger:
-                "border border-gray-300 rounded-md px-5 py-2",
-              organizationSwitcherTriggerIcon: "text-white",
+                "border-2 border-gray-300 rounded-md px-5 py-2 text-inherit",
+              organizationSwitcherTriggerIcon: "text-blue-500",
             },
           }}
         />
