@@ -44,3 +44,51 @@ export async function createProject(data: ProjectData) {
     throw new Error("Failed to create project: Unknown error occurred");
   }
 }
+
+export async function getProjects(ProjectId: string) {
+  const session = await auth();
+  const userId = session?.userId;
+  const orgId = session?.orgId;
+  console.log("GetProjects - Session:", { userId, orgId });
+  
+  if (!userId) {
+    throw new Error("You must be signed in to get projects");
+  }
+
+  if (!orgId) {
+    throw new Error("Organization ID is required");
+  }
+
+  try {
+    // console.log("GetProjects - Querying with:", { organizationId: orgId });
+
+    const projects = await db.project.findMany({
+      where: {
+        organizationId: orgId,
+      },
+      select: {
+        id: true,
+        name: true,
+        key: true,
+        description: true,
+        organizationId: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },  
+    });
+    
+    // console.log("GetProjects - Raw result:", projects);
+    
+    // if (!Array.isArray(projects)) {
+    //   console.error("GetProjects - Projects is not an array:", projects);
+    //   return [];
+    // }
+
+    return projects;
+  } catch (error) {
+    console.error("Failed to fetch projects:", error);
+    throw error;
+  }
+}

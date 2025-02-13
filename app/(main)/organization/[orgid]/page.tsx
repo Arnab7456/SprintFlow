@@ -2,6 +2,8 @@ import { getOrganization } from "@/actions/organization";
 import OrgSwitch from "@/components/org-switch";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import ProjectList from "./_components/Projectlist";
+
 export interface PageProps {
   params?: any;  
   searchParams?: any;
@@ -26,7 +28,7 @@ export default async function Organization({ params }: PageProps) {
         <OrgSwitch />
       </div>
       <div className="mb-4">
-       some orgs projects
+        <ProjectList orgId={orgid} />
       </div>
       <div className="mt-8">
       projects member of this org
