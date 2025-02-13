@@ -49,7 +49,7 @@ export async function getProjects(ProjectId: string) {
   const session = await auth();
   const userId = session?.userId;
   const orgId = session?.orgId;
-  console.log("GetProjects - Session:", { userId, orgId });
+  // console.log("GetProjects - Session:", { userId, orgId });
   
   if (!userId) {
     throw new Error("You must be signed in to get projects");
@@ -89,6 +89,46 @@ export async function getProjects(ProjectId: string) {
     return projects;
   } catch (error) {
     console.error("Failed to fetch projects:", error);
+    throw error;
+  }
+}
+
+
+export const deleteProject = async (projectId: string) => {
+  const session = await auth();
+  const userId = session?.userId;
+  const orgId = session?.orgId;
+  
+  if (!userId) {
+    throw new Error("You must be signed in to get projects");
+  }
+
+  if (!orgId) {
+    throw new Error("Organization ID is required");
+  }
+
+  try {
+    const project = await db.project.findFirst({
+      where: {
+        id: projectId,
+        organizationId: orgId,
+      },
+    });
+
+    if (!project || project.organizationId !== orgId) {
+      throw new Error("Project not found or belongs to another organization");
+    }
+
+    await db.project.delete({
+      where: {
+        id: projectId,
+        organizationId: orgId,
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete project:", error);
     throw error;
   }
 }
