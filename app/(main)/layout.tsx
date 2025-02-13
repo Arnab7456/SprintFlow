@@ -1,6 +1,6 @@
 const Layout = ({ children }: { children: React.ReactNode }) => {
     return (
-      <div className="container mx-auto mt-5">
+      <div className="animated-dotted-background dark:animated-dotted-background-dark">
         {children}
       </div>
     );
