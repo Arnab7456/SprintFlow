@@ -132,3 +132,45 @@ export const deleteProject = async (projectId: string) => {
     throw error;
   }
 }
+
+export const FetchProject = async (projectId: string) => {
+  const session = await auth();
+  const userId = session?.userId;
+  const orgId = session?.orgId;
+  
+  if (!userId) {
+    throw new Error("You must be signed in to get projects");
+  }
+
+  if (!orgId) {
+    throw new Error("Organization ID is required");
+  }
+
+  try {
+    const project = await db.project.findUnique({
+      where: {
+        id: projectId,
+      },
+      include :{
+        sprints :{
+          orderBy:{
+            createdAt : "desc"
+          }
+        }
+      }
+    });
+    if (!project) {
+      return null;
+    }
+  
+    // Verify project belongs to the organization
+    if (project.organizationId !== orgId) {
+      return null;
+    }
+
+    return { success: true , project };
+  } catch (error) {
+    console.error("Failed to update project:", error);
+    throw error;
+  }
+}

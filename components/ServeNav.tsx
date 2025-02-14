@@ -5,7 +5,7 @@ import UserLoading from './user-loading';
 const NavbarServer = async () => {
   await checkUser();
   return (
-    <div>
+    <div className="sticky top-0 z-50 ">
       <NavbarClient />
       <UserLoading />
     </div>
