@@ -10,3 +10,12 @@ export const projectSchema = z.object({
 });
 
 export type ProjectData = z.infer<typeof projectSchema>;
+
+export const SprintSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+  startDate: z.date(),
+  endDate: z.date(),
+  projectId: z.string()
+});
+
+export type SprintFormData = z.infer<typeof SprintSchema>;

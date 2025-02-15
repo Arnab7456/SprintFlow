@@ -1,6 +1,6 @@
 import { FetchProject } from "@/actions/Project";
 import { Building2 } from "lucide-react";
-import CreateSprint from "../_components/CreateSprint";
+import CreateSprintPage from "../_components/CreateSprint";
 
 export interface PageProps {
   params?: any;
@@ -8,7 +8,7 @@ export interface PageProps {
 }
 
 const ProjectPage = async ({ params }: PageProps) => {
-  const { projectId } = params;
+  const { projectId } = await params;
   const project = await FetchProject(projectId);
   if (!project) {
     return (
@@ -25,7 +25,7 @@ const ProjectPage = async ({ params }: PageProps) => {
   }
   return (
     <div className="min-h-screen">
-      <CreateSprint projectTitle={project.project.name} projectKey={project.project.key} projectId={projectId} sprintKey={1} />
+      <CreateSprintPage projectTitle={project.project.name} projectKey={project.project.key} projectId={projectId} sprintKey={1} />
     </div>
   );
 };
