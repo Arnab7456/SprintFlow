@@ -30,7 +30,7 @@ const DeleteProject = ({ projectId }: { projectId: string }) => {
             toast.success("Project deleted");
                 router.refresh();
         }
-    },[deleted])
+    },[deleted, router])
 
    if(isDeleting || !isAdmin) return null;
     return (

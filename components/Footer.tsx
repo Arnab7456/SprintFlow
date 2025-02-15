@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-inherit  text-inherit py-8 ">
+    <footer className=" dark:bg-black/[0.96]  text-inherit py-8 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between border-b border-gray-700 pb-6">
           <div className="text-lg font-bold">SprintFlow</div>

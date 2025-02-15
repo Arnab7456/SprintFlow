@@ -9,7 +9,7 @@ import {
 export default function FAQPage() {
   return (
     <div className="text-center  dark:bg-black/[0.96] mt-1 p-12 md:p-4">
-      <h1 className="text-2xl md:text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50">Frequently Asked Questions</h1>
+      <h1 className="text-2xl md:text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 to-neutral-400 dark:from-neutral-50 dark:to-neutral-200 bg-opacity-80 dark:bg-opacity-50 mb-4">Frequently Asked Questions</h1>
       <p className="pb-4 pt-2 text-sm dark:text-white">Quick answers to any questions you may have.</p>
 
       <div className="w-full h-fit py-0 flex justify-center items-center">
@@ -21,7 +21,7 @@ export default function FAQPage() {
                 value={`item-${index}`}
                 className="border rounded-xl overflow-hidden"
               >
-                <AccordionTrigger className="flex w-full justify-between items-center cursor-pointer focus:outline-none p-4 text-left font-medium text-gray-900 dark:text-white hover:bg-blue-100 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                <AccordionTrigger className="flex w-full justify-between items-center cursor-pointer focus:outline-none p-4 text-left font-medium text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-950 transition-colors duration-200">
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="flex w-full justify-start items-start cursor-pointer focus:outline-none p-4 text-left">

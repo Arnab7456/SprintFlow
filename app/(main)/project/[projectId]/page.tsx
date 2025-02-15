@@ -1,6 +1,13 @@
 import { FetchProject } from "@/actions/Project";
 import { Building2 } from "lucide-react";
-const ProjectPage = async ({ params }: { params: { projectId: string } }) => {
+import CreateSprint from "../_components/CreateSprint";
+
+export interface PageProps {
+  params?: any;
+  searchParams?: any;
+}
+
+const ProjectPage = async ({ params }: PageProps) => {
   const { projectId } = params;
   const project = await FetchProject(projectId);
   if (!project) {
@@ -18,31 +25,7 @@ const ProjectPage = async ({ params }: { params: { projectId: string } }) => {
   }
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="w-full sm:w-auto space-y-1 text-center sm:text-left">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight gradient-title break-words max-w-full">
-              Project: {project.project.name}
-            </h1>
-            <p className="text-muted-foreground">
-              View and manage your project
-            </p>
-          </div>
-          <div className="w-full sm:w-auto">
-            <p className="text-muted-foreground">Project ID: {projectId}</p>
-          </div>
-        </div>
-
-        <div className="mt-4 max-w-2xl">
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {project.project.description || "No description provided"}
-          </p>
-        </div>
-        <div>sprint creation</div>
-        <div>sprint list</div>
-        <div>issue creation</div>
-        <div>issue list</div>
-      </div>
+      <CreateSprint projectTitle={project.project.name} projectKey={project.project.key} projectId={projectId} sprintKey={1} />
     </div>
   );
 };

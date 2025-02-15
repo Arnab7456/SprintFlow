@@ -11,9 +11,9 @@ export default function Company() {
                     delay: 2000,
                 })
             ]}
-             className="w-full py-10 "
+             className="w-full py-10 dark:bg-black/[0.96] "
         >
-            <CarouselContent  className="flex gap-5 sm:gap-20 items-center ">
+            <CarouselContent  className="flex gap-5 sm:gap-20 items-center dark:bg-black/[0.96] ">
                 {companies.map((company) => (
                     <CarouselItem key={company.id} className="basis-1/3 lg:basis-1/6 ">
                         <Image

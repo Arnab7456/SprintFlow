@@ -60,9 +60,7 @@ export default function RootLayout({
           <main className="min-h-screen"> 
             {children}</main>
             <Toaster richColors />
-          <div className="container mx-auto">
           <Footer />
-          </div>
         </ThemeProvider>
         
       </body>
