@@ -1,16 +1,21 @@
 import { FetchProject } from "@/actions/Project";
 import { Building2 } from "lucide-react";
 import CreateSprintPage from "../_components/CreateSprint";
+import { SprintBoard } from "../_components/Sprintboard";
 
-export interface PageProps {
+// Define the PageProps interface
+interface PageProps {
   params?: any;
   searchParams?: any;
 }
-
 const ProjectPage = async ({ params }: PageProps) => {
   const { projectId } = await params;
-  const project = await FetchProject(projectId);
-  if (!project) {
+
+  // Fetch project data
+  const projectData = await FetchProject(projectId);
+
+  // Handle project not found
+  if (!projectData || !projectData.success) {
     return (
       <div className="flex items-center justify-center min-h-screen p-4">
         <div className="text-center p-6">
@@ -23,9 +28,31 @@ const ProjectPage = async ({ params }: PageProps) => {
       </div>
     );
   }
+
+  const { project } = projectData;
+
   return (
     <div className="min-h-screen">
-      <CreateSprintPage projectTitle={project.project.name} projectKey={project.project.key} projectId={projectId} sprintKey={1} />
+      {/* Create Sprint Component */}
+      <CreateSprintPage
+        projectTitle={project.name}
+        projectKey={project.key}
+        projectId={params.projectId}
+        sprintKey={1}
+      />
+
+      {/* Sprint Board or Empty State */}
+      {project.sprints.length > 0 ? (
+        <SprintBoard
+          sprints={project.sprints}
+          projectId={params.projectId}
+          orgId={project.organizationId}
+        />
+      ) : (
+        <div className="flex items-center justify-center p-6 mt-4 text-muted-foreground">
+          Create a Sprint from the button above
+        </div>
+      )}
     </div>
   );
 };

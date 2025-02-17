@@ -114,7 +114,7 @@ export default function CreateSprintPage({
       animate={{ opacity: 1, y: 0 }} // Animate to visible and in place
       transition={{ duration: 0.5 }}
     >
-      <div className="h-screen p-4 md:p-6">
+      <div className="p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div className="flex items-center gap-3 mb-4 md:mb-0">
