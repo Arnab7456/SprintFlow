@@ -19,7 +19,7 @@ import { updateSprintStatus } from "@/actions/Sprint";
 
 interface SprintManagerProps {
   selectedSprint: Sprint;
-  setSelectedSprint: (sprintId: string) => void; // Changed to accept sprintId
+  setSelectedSprint: (sprintId: string) => void;
   sprints: Sprint[];
   projectId: string;
 }
@@ -45,6 +45,11 @@ const SprintManager = ({
     data: updatedStatus,
   } = useFetch<UpdateSprintResponse>(updateSprintStatus);
 
+  // Sync local status with selected sprint's status
+  useEffect(() => {
+    setStatus(selectedSprint.status);
+  }, [selectedSprint.status]);
+
   const startDate = new Date(selectedSprint.startDate);
   const endDate = new Date(selectedSprint.endDate);
   const now = new Date();
@@ -60,7 +65,7 @@ const SprintManager = ({
   useEffect(() => {
     if (updatedStatus && updatedStatus.success) {
       setStatus(updatedStatus.sprint.status);
-      setSelectedSprint(updatedStatus.sprint.id); // Changed to pass just the ID
+      setSelectedSprint(updatedStatus.sprint.id);
     }
   }, [updatedStatus, loading, setSelectedSprint]);
 
@@ -84,11 +89,13 @@ const SprintManager = ({
     }
   }, [searchParams, sprints, selectedSprint.id, setSelectedSprint]);
 
-  const handleSprintChange = useCallback((value: string) => {
-    setSelectedSprint(value);
-    // @ts-expect-error 'shallow' does not exist in type 'NavigateOptions'
-    router.replace(`/project/${projectId}`, { shallow: true });
-  }, [projectId, router, setSelectedSprint]);
+  const handleSprintChange = useCallback(
+    (value: string) => {
+      setSelectedSprint(value);
+      router.replace(`/project/${projectId}`);
+    },
+    [projectId, router, setSelectedSprint]
+  );
 
   return (
     <>
