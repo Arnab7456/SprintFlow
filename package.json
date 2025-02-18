@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.10.3",
     "@clerk/themes": "^2.2.16",
+    "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^4.0.0",
     "@prisma/client": "6.3.1",
     "@radix-ui/react-accordion": "^1.2.2",
@@ -22,6 +23,7 @@
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.2",
     "@tabler/icons-react": "^3.29.0",
+    "@uiw/react-md-editor": "^4.0.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
