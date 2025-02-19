@@ -79,34 +79,13 @@ const typedStatusPro: StatusColumn[] = [
   { key: "DONE", name: "Done", bgColor: "border-r-4 border-green-400 dark:border-green-500" }
 ];
 
-// Client-side only DnD Provider
-const DndProvider = ({ 
-  children, 
-  onDragEnd 
-}: { 
-  children: React.ReactNode; 
-  onDragEnd: (result: DropResult) => void 
-}) => {
-  const [isClient, setIsClient] = useState(false);
-  
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />;
-  }
-
-  return <DragDropContext onDragEnd={onDragEnd}>{children}</DragDropContext>;
-};
-
 export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => {
-  const [currentSprint, setCurrentSprint] = useState<Sprint>(
-    sprints.find((sprint) => sprint.status === "ACTIVE") || sprints[0]
-  );
+  // Only initialize state once with a default sprint
+  const [currentSprint, setCurrentSprint] = useState<Sprint | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<IssueStatus>("TODO");
   const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
+  const [isClient, setIsClient] = useState(false);
   
   const {
     fn: fetchIssues,
@@ -122,18 +101,35 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
     error: updateIssuesError,
   } = useFetch(updateIssueStatus);
 
+  // Handle client-side rendering detection
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Initialize the current sprint only once
+  useEffect(() => {
+    if (sprints.length > 0 && !currentSprint) {
+      const activeSprint = sprints.find((sprint) => sprint.status === "ACTIVE");
+      setCurrentSprint(activeSprint || sprints[0]);
+    }
+  }, [sprints, currentSprint]);
+
+  // Fetch issues when sprint changes
   useEffect(() => {
     if (currentSprint?.id) {
-     fetchIssues(currentSprint.id);
+      fetchIssues(currentSprint.id);
     }
   }, [currentSprint?.id]);
 
+  // Update filtered issues when raw issues change
   useEffect(() => {
-    setFilteredIssues(issues || []);
+    if (issues && issues.length > 0) {
+      setFilteredIssues(issues);
+    }
   }, [issues]);
 
   const onDragEnd = async (result: DropResult) => {
-    if (!result.destination) return;
+    if (!result.destination || !currentSprint) return;
 
     if (currentSprint.status === "PLANNED") {
       toast.warning("Start the sprint first to update the issue");
@@ -174,7 +170,9 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
     } catch (error) {
       toast.error("Failed to update issue order");
       console.log(error);
-      await fetchIssues(currentSprint.id);
+      if (currentSprint?.id) {
+        await fetchIssues(currentSprint.id);
+      }
     }
   };
 
@@ -184,7 +182,9 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
   };
 
   const handleIssueCreated = async () => {
-    await fetchIssues(currentSprint.id);
+    if (currentSprint?.id) {
+      await fetchIssues(currentSprint.id);
+    }
   };
 
   const handleSprintChange = (sprintId: string) => {
@@ -195,13 +195,18 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
   };
 
   const handleIssueUpdate = async () => {
-    await fetchIssues(currentSprint.id);
+    if (currentSprint?.id) {
+      await fetchIssues(currentSprint.id);
+    }
   };
 
   const handleIssueDelete = async () => {
-    await fetchIssues(currentSprint.id);
+    if (currentSprint?.id) {
+      await fetchIssues(currentSprint.id);
+    }
   };
 
+  // Error state
   if (issuesError) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -211,58 +216,24 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
       </div>
     );
   }
-
-  const renderBoard = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {typedStatusPro.map((column) => (
-        <Droppable key={column.key} droppableId={column.key}>
-          {(provided) => (
-            <div className={`${column.bgColor} bg-white dark:bg-gray-800 rounded-lg shadow-sm transition-all duration-200`}>
-              <div 
-                className="p-4 min-h-[150px]" 
-                ref={provided.innerRef} 
-                {...provided.droppableProps}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold dark:text-white">{column.name}</h2>
-                  <button
-                    onClick={() => handleAddIssue(column.key)}
-                    className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-                    aria-label={`Add issue to ${column.name}`}
-                  >
-                    <Plus className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                  </button>
-                </div>
-                <div className="space-y-3">
-                  {filteredIssues
-                    .filter((issue) => issue.status === column.key)
-                    .map((issue, index) => (
-                      <Draggable key={issue.id} draggableId={issue.id} index={index}>
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <IssueCard 
-                              issue={issue} 
-                              showStatus={true} 
-                              onDelete={handleIssueDelete}
-                              onUpdate={handleIssueUpdate}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                </div>
-                {provided.placeholder}
-              </div>
-            </div>
-          )}
-        </Droppable>
-      ))}
-    </div>
-  );
+  
+  // Loading state for client-side rendering
+  if (!isClient) {
+    return (
+      <div className="flex justify-center my-8">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
+      </div>
+    );
+  }
+  
+  // Loading state if sprint isn't set yet
+  if (!currentSprint) {
+    return (
+      <div className="flex justify-center my-8">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -288,9 +259,57 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
           </div>
         )}
         
-        <DndProvider onDragEnd={onDragEnd}>
-          {renderBoard()}
-        </DndProvider>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {typedStatusPro.map((column) => (
+              <Droppable key={column.key} droppableId={column.key}>
+                {(provided) => (
+                  <div className={`${column.bgColor} bg-white dark:bg-gray-800 rounded-lg shadow-sm transition-all duration-200`}>
+                    <div 
+                      className="p-4 min-h-[150px]" 
+                      ref={provided.innerRef} 
+                      {...provided.droppableProps}
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold dark:text-white">{column.name}</h2>
+                        <button
+                          onClick={() => handleAddIssue(column.key)}
+                          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                          aria-label={`Add issue to ${column.name}`}
+                        >
+                          <Plus className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                        </button>
+                      </div>
+                      <div className="space-y-3">
+                        {filteredIssues
+                          .filter((issue) => issue.status === column.key)
+                          .map((issue, index) => (
+                            <Draggable key={issue.id} draggableId={issue.id} index={index}>
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  <IssueCard 
+                                    issue={issue} 
+                                    showStatus={true} 
+                                    onDelete={handleIssueDelete}
+                                    onUpdate={handleIssueUpdate}
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                      </div>
+                      {provided.placeholder}
+                    </div>
+                  </div>
+                )}
+              </Droppable>
+            ))}
+          </div>
+        </DragDropContext>
 
         <CreateIssueDrawer 
           isOpen={isDrawerOpen} 
