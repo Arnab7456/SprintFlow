@@ -22,3 +22,32 @@ export interface ProjectData {
    onIssueCreated: () => void
    orgID: string 
   }
+
+  // lib/types/issue.d.ts
+export type IssueStatus = "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE";
+export type IssuePriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+
+export interface Issue {
+  id: string;
+  title: string;
+  description: string;
+  status: IssueStatus;
+  priority: IssuePriority;
+  order: number;
+  assignee?: {
+    id: string;
+    name: string | null;
+    email: string;
+    imageUrl: string | null;
+  } | null;
+  reporter: {
+    id: string;
+    name: string | null;
+    email: string;
+    imageUrl: string | null;
+  };
+  sprintId: string;
+  projectId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

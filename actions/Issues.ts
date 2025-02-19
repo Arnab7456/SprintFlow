@@ -48,4 +48,56 @@ export default async function CreateIssue(projectId:string,data: ProjectData) {
     })
     return issue;
 }
-   
+   export async function getIssues(SprintId: string) {
+    const session = await auth();
+    const userId = session?.userId;
+    const orgId = session?.orgId;
+    if(!userId || !orgId){
+        throw new Error("You must be signed in to get projects");
+    }
+    try {
+        const issues = await db.issue.findMany({
+            where: {
+                sprintId: SprintId
+            },
+            include: {
+                assignee: true,
+                reporter: true,
+            },
+            orderBy: [
+                {
+                    order: "asc",
+                },
+                {
+                    status: "asc",
+                },
+            ],
+        });
+        return issues;
+    } catch (error) {
+        throw new Error("Failed to get issues");
+    }
+}
+
+export async function updateIssueStatus(updateIssues : any) {
+    const session = await auth();
+    const userId = session?.userId;
+    const orgId = session?.orgId;
+    if(!userId || !orgId){
+        throw new Error("You must be signed in to get projects");
+    }
+    await db.$transaction(async (prismats : any) =>{
+        for( const issue of updateIssues) {
+            await prismats.issue.update({
+                where: {
+                    id: issue.id
+                },
+                data: {
+                    status: issue.status,
+                    order: issue.order
+                }
+            })
+        }
+    })
+    return {success : true}
+}

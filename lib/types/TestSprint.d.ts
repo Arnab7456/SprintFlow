@@ -27,4 +27,11 @@ export interface IssueCreationDrawerProps {
     createdAt: Date;
     updatedAt: Date;
   }
-  
+  export interface Issue {
+    isOpen: boolean;
+    onClose: () => void;
+    sprintId: string;
+    status: IssueStatus;
+    onIssueCreated: () => void;
+    orgID: string;
+  }

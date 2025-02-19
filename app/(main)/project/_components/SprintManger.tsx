@@ -45,7 +45,6 @@ const SprintManager = ({
     data: updatedStatus,
   } = useFetch<UpdateSprintResponse>(updateSprintStatus);
 
-  // Sync local status with selected sprint's status
   useEffect(() => {
     setStatus(selectedSprint.status);
   }, [selectedSprint.status]);
@@ -98,47 +97,48 @@ const SprintManager = ({
   );
 
   return (
-    <>
+    <div className="flex flex-col gap-4 p-4 bg-background rounded-lg shadow-md dark:border dark:border-gray-700">
       <div className="flex justify-between items-center gap-4">
         <Select value={selectedSprint.id} onValueChange={handleSprintChange}>
-          <SelectTrigger className="bg-slate-950 self-start">
+          <SelectTrigger className="w-full md:w-auto bg-card text-foreground border border-gray-300 dark:border-gray-600">
             <SelectValue placeholder="Select Sprint" />
           </SelectTrigger>
           <SelectContent>
             {sprints.map((sprint) => (
               <SelectItem key={sprint.id} value={sprint.id}>
-                {sprint.name} ({format(new Date(sprint.startDate), "MMM d, yyyy")}{" "}
-                to {format(new Date(sprint.endDate), "MMM d, yyyy")})
+                {sprint.name} ({format(new Date(sprint.startDate), "MMM d, yyyy")} to {format(new Date(sprint.endDate), "MMM d, yyyy")})
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {canStart && (
-          <Button
-            onClick={() => handleStatusChange("ACTIVE")}
-            disabled={loading}
-            className="bg-green-900 text-white"
-          >
-            Start Sprint
-          </Button>
-        )}
-        {canEnd && (
-          <Button
-            onClick={() => handleStatusChange("COMPLETED")}
-            disabled={loading}
-            variant="destructive"
-          >
-            End Sprint
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {canStart && (
+            <Button
+              onClick={() => handleStatusChange("ACTIVE")}
+              disabled={loading}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              Start Sprint
+            </Button>
+          )}
+          {canEnd && (
+            <Button
+              onClick={() => handleStatusChange("COMPLETED")}
+              disabled={loading}
+              variant="destructive"
+            >
+              End Sprint
+            </Button>
+          )}
+        </div>
       </div>
-      {loading && <BarLoader width={"100%"} className="mt-2" color="#36d7b7" />}
+      {loading && <BarLoader width="100%" className="mt-2" color="#36d7b7" />}
       {getStatusText() && (
-        <Badge variant="default" className="mt-3 ml-1 self-start">
+        <Badge variant="default" className="mt-3">
           {getStatusText()}
         </Badge>
       )}
-    </>
+    </div>
   );
 };
 
