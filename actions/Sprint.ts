@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { Sprint, SprintStatus } from "@/lib/types/sprint.d";
+import { SprintStatus } from "@/lib/types/sprint.d";
 
 interface SprintData {
   name: string;

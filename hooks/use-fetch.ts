@@ -1,37 +1,35 @@
 'use client'
 import { useState } from "react";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 type FetchFunction<T> = (...args: any[]) => Promise<T>;
 
-const useFetch = <T>(cb: FetchFunction<T>) => {
-  const [data, setData] = useState<T | undefined>(undefined);
-  const [loading, setLoading] = useState<boolean>(false);
+export default function useFetch<T>(fn: FetchFunction<T>) {
+  const [data, setData] = useState<T>();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fn = async (...args: Parameters<FetchFunction<T>>) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await cb(...args);
-      setData(response);
+  const wrappedFn = async (...args: any[]) => {
+      setLoading(true);
       setError(null);
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error);
-        toast.error(error.message);
-      } else {
-        const unknownError = new Error("An unknown error occurred");
-        setError(unknownError);
-        toast.error(unknownError.message);
+      try {
+          const result = await fn(...args);
+          setData(result);
+          return result;
+      } catch (e) {
+          const error = e instanceof Error ? e : new Error('An error occurred');
+          setError(error);
+          throw error;
+      } finally {
+          setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
   };
 
-  return { data, loading, error, fn, setData };
-};
-
-export default useFetch;
+  return {
+      fn: wrappedFn,
+      loading,
+      data,
+      setData,
+      error
+  };
+}
