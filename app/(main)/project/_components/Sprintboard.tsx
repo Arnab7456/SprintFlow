@@ -237,8 +237,8 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8">
+      <div className="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white dark:bg-gray-800 p-2 rounded-xl mb-8">
           <SprintManager
             selectedSprint={currentSprint}
             setSelectedSprint={handleSprintChange}
@@ -247,15 +247,13 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
           />
         </div>
         
-        {updateIssuesError && (
-          <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 rounded-lg">
-            {updateIssuesError.message}
-          </div>
-        )}
+        {updateIssuesError && toast.error(updateIssuesError.message)}
+
         
         {(updateIssuesLoading || issuesLoading) && (
           <div className="flex justify-center my-4">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
+            Loading issues...
           </div>
         )}
         
@@ -264,7 +262,8 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
             {typedStatusPro.map((column) => (
               <Droppable key={column.key} droppableId={column.key}>
                 {(provided) => (
-                  <div className={`${column.bgColor} bg-white dark:bg-gray-800 rounded-lg shadow-sm transition-all duration-200`}>
+                  <div 
+                  className={`${column.bgColor ? `${column.bgColor} ` : ''}bg-gradient-to-l from-white to-gray-300/45 dark:from-black dark:to-gray-700/25 rounded-lg shadow-sm transition-all duration-200`}>
                     <div 
                       className="p-4 min-h-[150px]" 
                       ref={provided.innerRef} 

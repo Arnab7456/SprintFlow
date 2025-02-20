@@ -16,6 +16,8 @@ import useFetch from "@/hooks/use-fetch";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Sprint, SprintStatus } from "@/lib/types/sprint.d";
 import { updateSprintStatus } from "@/actions/Sprint";
+import { motion } from "framer-motion";
+import { Calendar, PlayCircle, StopCircle } from "lucide-react";
 
 interface SprintManagerProps {
   selectedSprint: Sprint;
@@ -96,50 +98,93 @@ const SprintManager = ({
     [projectId, router, setSelectedSprint]
   );
 
+  const getStatusBadgeColor = () => {
+    switch (status) {
+      case "ACTIVE":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+      case "COMPLETED":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
+      default:
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-4 p-4 bg-background rounded-lg shadow-md dark:border dark:border-gray-700">
-      <div className="flex justify-between items-center gap-4">
+    <motion.div 
+    initial={{ opacity: 0, y: -20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="flex flex-col gap-4 px-4 py-2 bg-background rounded-lg shadow-md dark:border dark:border-gray-700"
+  >
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-4 sm:gap-2 justify-start items-center sm:items-center">
         <Select value={selectedSprint.id} onValueChange={handleSprintChange}>
-          <SelectTrigger className="w-full md:w-auto bg-card text-foreground border border-gray-300 dark:border-gray-600">
+          <SelectTrigger className="w-full min-w-[280px] px-4 py-6 bg-card text-foreground border border-gray-300 dark:border-gray-600">
             <SelectValue placeholder="Select Sprint" />
           </SelectTrigger>
           <SelectContent>
             {sprints.map((sprint) => (
               <SelectItem key={sprint.id} value={sprint.id}>
-                {sprint.name} ({format(new Date(sprint.startDate), "MMM d, yyyy")} to {format(new Date(sprint.endDate), "MMM d, yyyy")})
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>{sprint.name}</span>
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 ml-6">
+                  {format(new Date(sprint.startDate), "MMM d")} - {format(new Date(sprint.endDate), "MMM d, yyyy")}
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <div className="flex gap-2">
-          {canStart && (
-            <Button
-              onClick={() => handleStatusChange("ACTIVE")}
-              disabled={loading}
-              className="bg-green-600 hover:bg-green-700 text-white"
+        <div className="flex items-center gap-2">
+          <Badge 
+            variant="secondary"
+            className={`${getStatusBadgeColor()} text-xs font-medium px-2 py-1`}
+          >
+            {status}
+          </Badge>
+          {getStatusText() && (
+            <Badge 
+              variant="outline" 
+              className="text-xs font-medium px-2 py-1"
             >
-              Start Sprint
-            </Button>
-          )}
-          {canEnd && (
-            <Button
-              onClick={() => handleStatusChange("COMPLETED")}
-              disabled={loading}
-              variant="destructive"
-            >
-              End Sprint
-            </Button>
+              {getStatusText()}
+            </Badge>
           )}
         </div>
       </div>
-      {loading && <BarLoader width="100%" className="mt-2" color="#36d7b7" />}
-      {getStatusText() && (
-        <Badge variant="default" className="mt-3">
-          {getStatusText()}
-        </Badge>
-      )}
+
+      <div className="flex gap-2 w-full sm:w-auto">
+        {canStart && (
+          <Button
+            onClick={() => handleStatusChange("ACTIVE")}
+            disabled={loading}
+            className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+          >
+            <PlayCircle className="h-4 w-4" />
+            Start Sprint
+          </Button>
+        )}
+        {canEnd && (
+          <Button
+            onClick={() => handleStatusChange("COMPLETED")}
+            disabled={loading}
+            variant="destructive"
+            className="w-full sm:w-auto flex items-center gap-2"
+          >
+            <StopCircle className="h-4 w-4" />
+            End Sprint
+          </Button>
+        )}
+      </div>
     </div>
-  );
+
+    {loading && (
+      <div className="w-full">
+        <BarLoader width="100%" className="mt-2" color="#36d7b7" />
+      </div>
+    )}
+  </motion.div>
+);
 };
 
 export default SprintManager;
