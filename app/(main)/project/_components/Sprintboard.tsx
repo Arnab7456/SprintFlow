@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import dynamic from 'next/dynamic';
 import SprintManager from "./SprintManger";
 import { Sprint } from "@/lib/types/sprint.d";
@@ -11,6 +11,7 @@ import { getIssues, updateIssueStatus } from "@/actions/Issues";
 import IssueCard from "@/components/IssueCard";
 import { toast } from "sonner";
 import type { DropResult } from '@hello-pangea/dnd';
+import { useRouter } from "next/navigation";
 
 // Dynamically import DnD components with ssr disabled
 const DragDropContext = dynamic(
@@ -80,12 +81,15 @@ const typedStatusPro: StatusColumn[] = [
 ];
 
 export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => {
+  const router = useRouter();
   // Only initialize state once with a default sprint
   const [currentSprint, setCurrentSprint] = useState<Sprint | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<IssueStatus>("TODO");
   const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [shouldRefreshPage, setShouldRefreshPage] = useState(false);
   
   const {
     fn: fetchIssues,
@@ -114,19 +118,44 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
     }
   }, [sprints, currentSprint]);
 
-  // Fetch issues when sprint changes
+  // Fetch issues when sprint changes or refresh is triggered
   useEffect(() => {
     if (currentSprint?.id) {
       fetchIssues(currentSprint.id);
     }
-  }, [currentSprint?.id]);
+  }, [currentSprint?.id, refreshTrigger]);
 
   // Update filtered issues when raw issues change
   useEffect(() => {
     if (issues && issues.length > 0) {
       setFilteredIssues(issues);
+    } else {
+      setFilteredIssues([]);
     }
   }, [issues]);
+
+  // Component mount/unmount cleanup effect
+  useEffect(() => {
+    // Cleanup function will run when component unmounts
+    return () => {
+      // Reset any state or perform other cleanup
+      setFilteredIssues([]);
+      setIssues([]);
+    };
+  }, []);
+
+  // Handle page refresh effect
+  useEffect(() => {
+    if (shouldRefreshPage) {
+      // Option 1: Full page refresh
+      window.location.reload();
+      
+      // Option 2: Using Next.js router refresh (less aggressive)
+      // router.refresh();
+      
+      setShouldRefreshPage(false);
+    }
+  }, [shouldRefreshPage, router]);
 
   const onDragEnd = async (result: DropResult) => {
     if (!result.destination || !currentSprint) return;
@@ -170,9 +199,7 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
     } catch (error) {
       toast.error("Failed to update issue order");
       console.log(error);
-      if (currentSprint?.id) {
-        await fetchIssues(currentSprint.id);
-      }
+      triggerRefresh();
     }
   };
 
@@ -181,10 +208,25 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
     setIsDrawerOpen(true);
   };
 
+  const triggerRefresh = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
+  const refreshPage = useCallback(() => {
+    setShouldRefreshPage(true);
+  }, []);
+
   const handleIssueCreated = async () => {
-    if (currentSprint?.id) {
-      await fetchIssues(currentSprint.id);
-    }
+    setIsDrawerOpen(false);
+    toast.success("Issue created successfully");
+    
+    // Choose one of the refresh methods:
+    
+    // Method 1: Trigger a data refresh
+    triggerRefresh();
+    
+    // Method 2: Force a full page refresh
+    refreshPage();
   };
 
   const handleSprintChange = (sprintId: string) => {
@@ -195,15 +237,11 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
   };
 
   const handleIssueUpdate = async () => {
-    if (currentSprint?.id) {
-      await fetchIssues(currentSprint.id);
-    }
+    triggerRefresh();
   };
 
   const handleIssueDelete = async () => {
-    if (currentSprint?.id) {
-      await fetchIssues(currentSprint.id);
-    }
+    triggerRefresh();
   };
 
   // Error state
@@ -253,7 +291,7 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
         {(updateIssuesLoading || issuesLoading) && (
           <div className="flex justify-center my-4">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
-            Loading issues...
+            <span className="ml-2">Loading issues...</span>
           </div>
         )}
         
