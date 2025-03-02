@@ -130,3 +130,84 @@ export async function updateIssueStatus(updateIssues : any) {
     })
     return {success : true}
 }
+export async function updateIssue(issueID : any, data : any) {
+    const session = await auth();
+    const userId = session?.userId;
+    const orgId = session?.orgId;
+    if(!userId || !orgId){
+        throw new Error("You must be signed in to get projects");
+    }
+   try {
+    const issue = await db.issue.findUnique({
+        where: {
+            id: issueID
+        },
+        include: {
+            project: true,
+            reporter: true,
+            assignee: true
+        }
+    })
+    if (!issue) {
+        throw new Error("Issue not found");
+    }
+    if (issue.project.organizationId !== orgId) {
+        throw new Error("Unauthorized");
+    }
+    const updatedIssue = await db.issue.update({
+        where: {
+            id: issueID
+        },
+        data: {
+            ...data
+        },
+        include: {
+            project: true,
+            reporter: true,
+            assignee: true
+        }
+    })
+    return {success : true, issue : updatedIssue}
+   } catch (error) {
+    return {success : false}
+   }
+}
+
+export async function deleteIssue(issueID : any) {
+    const session = await auth();
+    const userId = session?.userId;
+    const orgId = session?.orgId;
+    if(!userId || !orgId){
+        throw new Error("You must be signed in to get projects");
+    }
+    const user = await db.user.findUnique({
+        where: {
+            clerkUserId: userId
+        }
+    })
+    if(!user){
+        throw new Error("You must be signed in to create a project");
+    }
+    const issue = await db.issue.findUnique({
+        where: {
+            id: issueID
+        },
+        include: {
+            project: true,
+            reporter: true,
+            assignee: true
+        }
+    })
+    if(!issue){
+        throw new Error("Issue not found");
+    }
+    if(issue.reporterId !== user.id){
+        throw new Error("You must be the reporter to delete an issue");
+    }
+    await db.issue.delete({
+        where: {
+            id: issueID
+        }
+    })
+    return {success : true}
+}

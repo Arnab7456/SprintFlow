@@ -321,7 +321,7 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
                         {filteredIssues
                           .filter((issue) => issue.status === column.key)
                           .map((issue, index) => (
-                            <Draggable key={issue.id} draggableId={issue.id} index={index}>
+                            <Draggable key={issue.id} draggableId={issue.id} index={index} isDragDisabled={updateIssuesLoading}>
                               {(provided) => (
                                 <div
                                   ref={provided.innerRef}
