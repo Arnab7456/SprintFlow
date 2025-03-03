@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from 'next/dynamic';
 import SprintManager from "./SprintManger";
 import { Sprint } from "@/lib/types/sprint.d";
@@ -53,6 +53,7 @@ interface Issue {
   createdAt: Date;
   updatedAt: Date;
 }
+
 interface SprintBoardProps {
   sprints: Sprint[];
   projectId: string;
@@ -82,15 +83,19 @@ const typedStatusPro: StatusColumn[] = [
 
 export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => {
   const router = useRouter();
-  // Only initialize state once with a default sprint
-  const [currentSprint, setCurrentSprint] = useState<Sprint | null>(null);
+  const hasFetchedRef = useRef<{[key: string]: boolean}>({});
+  const lastSprintIdRef = useRef<string | null>(null);
+  const mountedRef = useRef(false);
+  
+  // Basic UI state
+  const [isClient, setIsClient] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<IssueStatus>("TODO");
-  const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
-  const [isClient, setIsClient] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [shouldRefreshPage, setShouldRefreshPage] = useState(false);
   
+  // Main state - carefully managed
+  const [currentSprint, setCurrentSprint] = useState<Sprint | null>(null);
+  
+  // Fetch hooks
   const {
     fn: fetchIssues,
     loading: issuesLoading,
@@ -105,59 +110,48 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
     error: updateIssuesError,
   } = useFetch(updateIssueStatus);
 
-  // Handle client-side rendering detection
+  // Handle client-side initialization only once
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    if (!mountedRef.current) {
+      setIsClient(true);
+      mountedRef.current = true;
 
-  // Initialize the current sprint only once
-  useEffect(() => {
-    if (sprints.length > 0 && !currentSprint) {
-      const activeSprint = sprints.find((sprint) => sprint.status === "ACTIVE");
-      setCurrentSprint(activeSprint || sprints[0]);
+      // Initialize the current sprint only once on mount
+      if (sprints.length > 0) {
+        const activeSprint = sprints.find((sprint) => sprint.status === "ACTIVE");
+        const sprintToUse = activeSprint || sprints[0];
+        setCurrentSprint(sprintToUse);
+        lastSprintIdRef.current = sprintToUse.id;
+      }
     }
-  }, [sprints, currentSprint]);
-
-  // Fetch issues when sprint changes or refresh is triggered
-  useEffect(() => {
-    if (currentSprint?.id) {
-      fetchIssues(currentSprint.id);
-    }
-  }, [currentSprint?.id, refreshTrigger]);
-
-  // Update filtered issues when raw issues change
-  useEffect(() => {
-    if (issues && issues.length > 0) {
-      setFilteredIssues(issues);
-    } else {
-      setFilteredIssues([]);
-    }
-  }, [issues]);
-
-  // Component mount/unmount cleanup effect
-  useEffect(() => {
-    // Cleanup function will run when component unmounts
+    
+    // Clean-up function
     return () => {
-      // Reset any state or perform other cleanup
-      setFilteredIssues([]);
-      setIssues([]);
+      mountedRef.current = false;
     };
-  }, []);
+  }, [sprints]);
 
-  // Handle page refresh effect
+  // Safely fetch issues when needed, with protections against redundant calls
   useEffect(() => {
-    if (shouldRefreshPage) {
-      // Option 1: Full page refresh
-      window.location.reload();
-      
-      // Option 2: Using Next.js router refresh (less aggressive)
-      // router.refresh();
-      
-      setShouldRefreshPage(false);
+    const sprintId = currentSprint?.id;
+    
+    if (!sprintId || !mountedRef.current) return;
+    
+    // Avoid duplicate fetches for the same sprint
+    if (!hasFetchedRef.current[sprintId]) {
+      fetchIssues(sprintId);
+      hasFetchedRef.current[sprintId] = true;
     }
-  }, [shouldRefreshPage, router]);
+  }, [currentSprint?.id, fetchIssues]);
 
-  const onDragEnd = async (result: DropResult) => {
+  // Handle manual fetch trigger
+  const manualRefresh = useCallback((sprintId: string) => {
+    if (sprintId && mountedRef.current) {
+      fetchIssues(sprintId);
+    }
+  }, [fetchIssues]);
+
+  const onDragEnd = useCallback(async (result: DropResult) => {
     if (!result.destination || !currentSprint) return;
 
     if (currentSprint.status === "PLANNED") {
@@ -194,55 +188,55 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
 
     const sortedIssues = newOrderData.sort((a, b) => a.order - b.order);
     setIssues(sortedIssues);
+    
     try {
       await updateIssueOrderFn(sortedIssues);
     } catch (error) {
-      toast.error("Failed to update issue order");
-      console.log(error);
-      triggerRefresh();
+      console.error("Failed to update issue order", error);
+      if (currentSprint?.id) {
+        manualRefresh(currentSprint.id);
+      }
     }
-  };
+  }, [currentSprint, issues, setIssues, updateIssueOrderFn, manualRefresh]);
 
-  const handleAddIssue = (status: IssueStatus) => {
+  const handleAddIssue = useCallback((status: IssueStatus) => {
     setSelectedStatus(status);
     setIsDrawerOpen(true);
-  };
-
-  const triggerRefresh = useCallback(() => {
-    setRefreshTrigger(prev => prev + 1);
   }, []);
 
-  const refreshPage = useCallback(() => {
-    setShouldRefreshPage(true);
-  }, []);
-
-  const handleIssueCreated = async () => {
+  const handleIssueCreated = useCallback(() => {
     setIsDrawerOpen(false);
-    toast.success("Issue created successfully");
-    
-    // Choose one of the refresh methods:
-    
-    // Method 1: Trigger a data refresh
-    triggerRefresh();
-    
-    // Method 2: Force a full page refresh
-    refreshPage();
-  };
-
-  const handleSprintChange = (sprintId: string) => {
-    const newSprint = sprints.find((sprint) => sprint.id === sprintId);
-    if (newSprint) {
-      setCurrentSprint(newSprint);
+    if (currentSprint?.id) {
+      // Force a refetch
+      hasFetchedRef.current[currentSprint.id] = false;
+      manualRefresh(currentSprint.id);
     }
-  };
+  }, [currentSprint?.id, manualRefresh]);
 
-  const handleIssueUpdate = async () => {
-    triggerRefresh();
-  };
+  const handleSprintChange = useCallback((sprintId: string) => {
+    // Only change sprint if it's different from current
+    if (sprintId !== lastSprintIdRef.current) {
+      const newSprint = sprints.find((sprint) => sprint.id === sprintId);
+      if (newSprint) {
+        setCurrentSprint(newSprint);
+        lastSprintIdRef.current = sprintId;
+      }
+    }
+  }, [sprints]);
 
-  const handleIssueDelete = async () => {
-    triggerRefresh();
-  };
+  const handleIssueUpdate = useCallback(() => {
+    if (currentSprint?.id) {
+      hasFetchedRef.current[currentSprint.id] = false;
+      manualRefresh(currentSprint.id);
+    }
+  }, [currentSprint?.id, manualRefresh]);
+
+  const handleIssueDelete = useCallback(() => {
+    if (currentSprint?.id) {
+      hasFetchedRef.current[currentSprint.id] = false;
+      manualRefresh(currentSprint.id);
+    }
+  }, [currentSprint?.id, manualRefresh]);
 
   // Error state
   if (issuesError) {
@@ -285,9 +279,8 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
           />
         </div>
         
-        {updateIssuesError && toast.error(updateIssuesError.message)}
+        {updateIssuesError && <div className="text-red-600 dark:text-red-400 mb-4">{updateIssuesError.message}</div>}
 
-        
         {(updateIssuesLoading || issuesLoading) && (
           <div className="flex justify-center my-4">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
@@ -318,7 +311,7 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
                         </button>
                       </div>
                       <div className="space-y-3">
-                        {filteredIssues
+                        {issues
                           .filter((issue) => issue.status === column.key)
                           .map((issue, index) => (
                             <Draggable key={issue.id} draggableId={issue.id} index={index} isDragDisabled={updateIssuesLoading}>
