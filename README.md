@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sprinflow
 
-## Getting Started
 
-First, run the development server:
+## The #1 Scrum Management Platform
+
+Sprinflow is a cutting-edge agile project management platform built for modern development teams. Visit our [live demo](https://sprint-flow-ten.vercel.app/).
+
+### 🚀 Streamline Agile Workflows
+
+Optimize your agile process with seamless collaboration, sprint planning, and real-time progress tracking. Sprinflow brings your team together to deliver better results, faster.
+
+### 💻 Built for Developers
+
+Created specifically for engineers, developers, dreamers, thinkers, and doers. We understand your workflow because we're developers too.
+
+### 🍎 Ease of Use
+
+It's as easy as using an Apple, and as expensive as buying one. Our intuitive interface requires minimal training—get your team up and running in minutes.
+
+### 💰 Pricing Like No Other
+
+completey free of charge
+
+### ⚡ 100% Uptime Guarantee
+
+We just cannot be taken down by anyone. Built on a rock-solid infrastructure that ensures your team can collaborate anytime.
+
+### 🔧 24/7 Customer Support
+
+We are available 100% of the time. At least our AI Agents are. Get help whenever you need it.
+
+### ✨ And Everything Else
+
+We've built Sprinflow with love and attention to detail. Discover more features when you try it out!
+
+## Tech Stack
+
+Sprinflow is built with modern, robust technologies:
+
+- **Next.js** - React framework for production
+- **TypeScript** - Type-safe code
+- **PNPM** - Fast, disk space efficient package manager
+- **Prisma** - Next-generation ORM
+- **PostgreSQL** - Advanced open source database
+- **Neon DB** - Serverless Postgres
+- **Clerk** - Authentication and user management
+- **Aceternity UI** - Beautiful UI components
+- **Magic UI** - Delightful interactions
+- **shadcn/ui** - Reusable UI components
+
+## What is Sprinflow?
+
+Sprinflow is a platform that streamlines project collaboration, workflow automation, and team management to enhance productivity. Our mission is to make agile development truly agile by removing obstacles and creating a seamless environment for teams to thrive.
+
+## Get Started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Clone the repository
+git clone https://github.com/Arnab7456/SprintFlow
+
+# Navigate to the project directory
+cd SprintFlow
+
+# Install dependencies
+pnpm install
+
+# Set up your environment variables
+cp .env.local
+
+# Start the development server
 pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
