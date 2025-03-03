@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BarLoader } from "react-spinners";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink } from 'lucide-react';
 import { usePathname, useRouter } from "next/navigation";
 
 import statuses from "@/data/statusPro.json";
@@ -38,44 +38,44 @@ type User = {
 };
 
 interface Issue {
-    id: string;
-    title: string;
-    description: string | null;
-    status: "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE";
-    priority: string;
-    order: number;
-    sprintId: string | null;  
-    projectId: string;
-    assignee: User | null;
-    reporter: User;
-    createdAt: Date;
-    updatedAt: Date;
-  }
+  id: string;
+  title: string;
+  description: string | null;
+  status: "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE";
+  priority: string;
+  order: number;
+  sprintId: string | null;  
+  projectId: string;
+  assignee: User | null;
+  reporter: User;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 type DeleteResponse = {
   success: boolean;
   id?: string;
 };
 
-interface IssueDetailsDialogProps {
+interface IssueDetailsCardProps {
   isOpen: boolean;
   onClose: () => void;
   issue: Issue;
-  onDelete?: () => void;
-  onUpdate?: (updatedIssue: Issue) => void;
+  onDelete?: (issueData?: any) => void;
+  onUpdate?: (issueData?: any) => void;
   borderCol?: string;
 }
 
 const priorityOptions: string[] = ["LOW", "MEDIUM", "HIGH", "URGENT"];
 
-export default function IssueDetailsDialog({
+export default function IssueDetailsCard({
   isOpen,
   onClose,
   issue,
   onDelete = () => {},
   onUpdate = () => {},
   borderCol = "",
-}: IssueDetailsDialogProps) {
+}: IssueDetailsCardProps) {
   const [status, setStatus] = useState<string>(issue.status);
   const [priority, setPriority] = useState<string>(issue.priority);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
@@ -84,7 +84,7 @@ export default function IssueDetailsDialog({
   const router = useRouter();
   const pathname = usePathname();
 
-  // FIXED: Only update local state when issue prop changes and it's different from current state
+  // Only update local state when issue prop changes and it's different from current state
   useEffect(() => {
     if (issue.status !== status) {
       setStatus(issue.status);
@@ -93,7 +93,7 @@ export default function IssueDetailsDialog({
       setPriority(issue.priority);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [issue]);
+  }, [issue, status, priority]); // Added status and priority to dependencies
 
   const {
     loading: deleteLoading,
@@ -111,7 +111,11 @@ export default function IssueDetailsDialog({
 
   const handleDelete = async (): Promise<void> => {
     if (window.confirm("Are you sure you want to delete this issue?")) {
-      deleteIssueFn(issue.id);
+      try {
+        await deleteIssueFn(issue.id);
+      } catch (error) {
+        console.error("Error deleting issue:", error);
+      }
     }
   };
 
@@ -120,7 +124,14 @@ export default function IssueDetailsDialog({
     
     setStatus(newStatus);
     setIsUpdating(true);
-    await updateIssueFn(issue.id, { status: newStatus, priority });
+    try {
+      await updateIssueFn(issue.id, { status: newStatus, priority });
+    } catch (error) {
+      console.error("Error updating status:", error);
+      // Revert to previous status on error
+      setStatus(issue.status);
+      setIsUpdating(false);
+    }
   };
 
   const handlePriorityChange = async (newPriority: string): Promise<void> => {
@@ -128,24 +139,31 @@ export default function IssueDetailsDialog({
     
     setPriority(newPriority);
     setIsUpdating(true);
-    await updateIssueFn(issue.id, { status, priority: newPriority });
+    try {
+      await updateIssueFn(issue.id, { status, priority: newPriority });
+    } catch (error) {
+      console.error("Error updating priority:", error);
+      // Revert to previous priority on error
+      setPriority(issue.priority);
+      setIsUpdating(false);
+    }
   };
 
-  // FIXED: Made sure isUpdating gets reset in all scenarios
+  // Handle delete success
   useEffect(() => {
     if (deleted && deleted.success) {
       onClose();
-      onDelete();
+      onDelete(issue);
     }
-  }, [deleted, onClose, onDelete]);
+  }, [deleted, onClose, onDelete, issue]);
 
-  // FIXED: Separate effect for update to avoid confusion and ensure isUpdating resets properly
+  // Handle update success/failure
   useEffect(() => {
     if (updated) {
       if (updated.success && updated.issue) {
-        onUpdate(updated.issue as Issue);
+        onUpdate(updated.issue);
       }
-      // Always reset isUpdating when we get a response, successful or not
+      // Always reset isUpdating when we get a response
       setIsUpdating(false);
     }
   }, [updated, onUpdate]);
@@ -157,7 +175,7 @@ export default function IssueDetailsDialog({
     router.push(`/project/${issue.projectId}?sprint=${issue.sprintId}`);
   };
 
-  const isProjectPage: boolean = !pathname.startsWith("/project/");
+  const isProjectPage: boolean = pathname ? !pathname.startsWith("/project/") : false;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
