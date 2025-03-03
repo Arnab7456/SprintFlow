@@ -232,7 +232,7 @@ export default function IssueDetailsCard({
           <div>
             <h4 className="font-semibold">Description</h4>
             <MDEditor.Markdown
-              className="rounded px-2 py-1"
+              className="rounded px-2 py-1   bg-gray-100 dark:bg-gray-800"
               source={issue.description ? issue.description : "--"}
             />
           </div>
