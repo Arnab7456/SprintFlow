@@ -11,7 +11,6 @@ import {
 } from "./ui/card";
 import { useState } from "react";
 import IssueDetailsCard from "./IssueDetailsCard";
-import { useRouter } from "next/navigation";
 
 export type User = {
     id: string;
@@ -56,15 +55,14 @@ const IssueCard = ({
   });
   const borderColor = "border-gray-500/50";
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const router = useRouter();
-  
   const onDeleteHandler = (issueData?: any): void => {
-    router.refresh();
+    // Call the parent component's callback directly
     onDelete(issueData);
   };
 
+  // FIXED: Removed router.refresh() to prevent cascading updates
   const onUpdateHandler = (issueData?: any): void => {
-    router.refresh();
+    // Call the parent component's callback directly
     onUpdate(issueData);
   };
 

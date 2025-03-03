@@ -84,11 +84,16 @@ export default function IssueDetailsDialog({
   const router = useRouter();
   const pathname = usePathname();
 
-  // Update local state when issue prop changes
+  // FIXED: Only update local state when issue prop changes and it's different from current state
   useEffect(() => {
-    setStatus(issue.status);
-    setPriority(issue.priority);
-  }, [issue.status, issue.priority]);
+    if (issue.status !== status) {
+      setStatus(issue.status);
+    }
+    if (issue.priority !== priority) {
+      setPriority(issue.priority);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [issue]);
 
   const {
     loading: deleteLoading,
@@ -126,16 +131,24 @@ export default function IssueDetailsDialog({
     await updateIssueFn(issue.id, { status, priority: newPriority });
   };
 
+  // FIXED: Made sure isUpdating gets reset in all scenarios
   useEffect(() => {
     if (deleted && deleted.success) {
       onClose();
       onDelete();
     }
-    if (updated && updated.success && updated.issue) {
-      onUpdate(updated.issue as Issue);
+  }, [deleted, onClose, onDelete]);
+
+  // FIXED: Separate effect for update to avoid confusion and ensure isUpdating resets properly
+  useEffect(() => {
+    if (updated) {
+      if (updated.success && updated.issue) {
+        onUpdate(updated.issue as Issue);
+      }
+      // Always reset isUpdating when we get a response, successful or not
       setIsUpdating(false);
     }
-  }, [deleted, updated, onClose, onDelete, onUpdate]);
+  }, [updated, onUpdate]);
 
   const canChange: boolean =
     user?.id === issue.reporter.clerkUserId || membership?.role === "org:admin";
