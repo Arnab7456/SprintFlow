@@ -11,7 +11,6 @@ import { getIssues, updateIssueStatus } from "@/actions/Issues";
 import IssueCard from "@/components/IssueCard";
 import { toast } from "sonner";
 import type { DropResult } from '@hello-pangea/dnd';
-import { useRouter } from "next/navigation";
 
 // Dynamically import DnD components with ssr disabled
 const DragDropContext = dynamic(
@@ -82,7 +81,6 @@ const typedStatusPro: StatusColumn[] = [
 ];
 
 export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => {
-  const router = useRouter();
   const hasFetchedRef = useRef<{[key: string]: boolean}>({});
   const lastSprintIdRef = useRef<string | null>(null);
   const mountedRef = useRef(false);
