@@ -28,11 +28,8 @@ const NavbarClient =  () => {
           <Link href="/about" className=" hover:text-blue-600">
             About Us
           </Link>
-          <Link href="/pricing" className=" hover:text-blue-600">
+          <Link href="/Pricing" className=" hover:text-blue-600">
             Pricing
-          </Link>
-          <Link href="/contact" className=" hover:text-blue-600">
-            Contact
           </Link>
           <motion.li
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -98,11 +95,8 @@ const NavbarClient =  () => {
             <Link href="/about" className="text-lg font-medium  block">
               About Us
             </Link>
-            <Link href="/pricing" className="text-lg font-medium  block">
+            <Link href="/Pricing" className="text-lg font-medium  block">
               Pricing
-            </Link>
-            <Link href="/contact" className="text-lg font-medium  block">
-              Contact
             </Link>
           </SignedOut>
           <SignedIn>
