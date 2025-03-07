@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import FAQPage from "@/components/Faq";
 
+// Define props for the OpenSourcePricing component
+
 const features = [
   "Unlimited public repositories",
   "Community support",
@@ -23,9 +25,8 @@ const features = [
   "MIT License",
 ];
 
-type CardProps = React.ComponentProps<typeof Card>;
 
-export default function OpenSourcePricing({ className, ...props }: CardProps) {
+export default function OpenSourcePricing() {
   // Card container animation
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -72,8 +73,7 @@ export default function OpenSourcePricing({ className, ...props }: CardProps) {
           variants={cardVariants}
         >
           <Card
-            className={cn("w-[380px] relative overflow-hidden", className)}
-            {...props}
+            className={cn("w-[380px] relative overflow-hidden")}
           >
             <motion.div 
               initial={{ rotate: 0, opacity: 0 }}

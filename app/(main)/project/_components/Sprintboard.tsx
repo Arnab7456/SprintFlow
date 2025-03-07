@@ -11,6 +11,7 @@ import { getIssues, updateIssueStatus } from "@/actions/Issues";
 import IssueCard from "@/components/IssueCard";
 import { toast } from "sonner";
 import type { DropResult } from '@hello-pangea/dnd';
+import BoardFilters from "./Board-fliter";
 
 // Dynamically import DnD components with ssr disabled
 const DragDropContext = dynamic(
@@ -38,7 +39,7 @@ interface User {
   updatedAt: Date;
 }
 
-interface Issue {
+export interface Issue {
   id: string;
   title: string;
   description: string | null;
@@ -84,14 +85,22 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
   const hasFetchedRef = useRef<{[key: string]: boolean}>({});
   const lastSprintIdRef = useRef<string | null>(null);
   const mountedRef = useRef(false);
+
+  
   
   // Basic UI state
   const [isClient, setIsClient] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<IssueStatus>("TODO");
-  
   // Main state - carefully managed
   const [currentSprint, setCurrentSprint] = useState<Sprint | null>(null);
+  const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
+
+  
+
+  const handleIssueFilter = (filteredIssues: Issue[]) => {
+    setFilteredIssues(filteredIssues);
+  };
   
   // Fetch hooks
   const {
@@ -276,6 +285,9 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
             projectId={projectId}
           />
         </div>
+        {issues && !issuesLoading &&  (
+          <BoardFilters issues={issues} onFilterChange={handleIssueFilter} />
+        )}
         
         {updateIssuesError && <div className="text-red-600 dark:text-red-400 mb-4">{updateIssuesError.message}</div>}
 
@@ -309,7 +321,7 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
                         </button>
                       </div>
                       <div className="space-y-3">
-                        {issues
+                        {filteredIssues
                           .filter((issue) => issue.status === column.key)
                           .map((issue, index) => (
                             <Draggable key={issue.id} draggableId={issue.id} index={index} isDragDisabled={updateIssuesLoading}>
@@ -330,10 +342,11 @@ export const SprintBoard = ({ sprints, projectId, orgId }: SprintBoardProps) => 
                             </Draggable>
                           ))}
                       </div>
+                      
                       {provided.placeholder}
                     </div>
                   </div>
-                )}
+                ) }
               </Droppable>
             ))}
           </div>
