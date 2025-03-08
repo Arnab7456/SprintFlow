@@ -6,7 +6,7 @@ import ProjectList from "./_components/Projectlist";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Building2 } from "lucide-react";
-
+import { UserIssueList } from "./_components/User-Issue";
 export interface PageProps {
   params?: any;
   searchParams?: any;
@@ -17,6 +17,7 @@ export default async function Organization({ params }: PageProps) {
   if (!session?.userId) {
     redirect("/sign-in");
   }
+  const userId = session?.userId;
 
   const orgid = (await params?.orgid) ?? "loading...";
   const organization = await getOrganization(orgid);
@@ -70,10 +71,10 @@ export default async function Organization({ params }: PageProps) {
           <Card className="border sm:border shadow-none sm:shadow">
             <CardContent className="p-2 sm:p-6">
               <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4">
-                Organization Members
+                Organization sprints 
               </h2>
               <div className="text-muted-foreground text-sm sm:text-base">
-                View and manage members of this organization
+                <UserIssueList userId={userId} />
               </div>
             </CardContent>
           </Card>

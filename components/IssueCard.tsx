@@ -40,8 +40,8 @@ export type IssueStatus = "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE";
 interface IssueCardProps {
   issue: Issue;
   showStatus: boolean;
-  onDelete: (issueData?: any) => void;
-  onUpdate: (issueData?: any) => void;
+  onDelete?: (issueData?: any) => void;
+  onUpdate?: (issueData?: any) => void;
 }
 
 const IssueCard = ({
@@ -57,12 +57,14 @@ const IssueCard = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const onDeleteHandler = (issueData?: any): void => {
     // Call the parent component's callback directly
+    if (!onDelete) return;
     onDelete(issueData);
   };
 
   // FIXED: Removed router.refresh() to prevent cascading updates
   const onUpdateHandler = (issueData?: any): void => {
     // Call the parent component's callback directly
+    if (!onUpdate) return;
     onUpdate(issueData);
   };
 

@@ -211,3 +211,43 @@ export async function deleteIssue(issueID : any) {
     })
     return {success : true}
 }
+
+export async function getUserIssue (userId : string) {
+    const session = await auth();
+    const orgId = session?.orgId;
+    if(!orgId){
+        throw new Error("You must be signed in to get projects");
+    }
+    const user = await db.user.findUnique({
+        where: {
+            clerkUserId: userId
+        }
+    })
+    if(!user){
+        throw new Error("You must be signed in to get projects");
+    }
+    const issues = await db.issue.findMany({
+        where: {
+            OR: [
+                {
+                    reporterId: user.id
+                },
+                {
+                    assigneeId: user.id
+                }
+            ],
+            project: {
+                organizationId: orgId
+            }    
+        },
+        include: {
+            project: true,
+            reporter: true,
+            assignee: true
+        },
+        orderBy: {
+            updatedAt: "desc"
+        },
+    })
+    return issues
+}
