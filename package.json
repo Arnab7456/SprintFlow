@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.10.3",
+    "@clerk/nextjs": "^6.39.2",
     "@clerk/themes": "^2.2.16",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^4.0.0",
